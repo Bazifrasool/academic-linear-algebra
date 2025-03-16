@@ -1,5 +1,3 @@
-Sure! Here's a summary of our conversation:
-
 1. **Overloading `[][]` Operator:**
    - We discussed overloading the `[][]` operator for a 2D matrix implemented in a flat vector, using a proxy class to facilitate element access.
 
@@ -37,6 +35,11 @@ Sure! Here's a summary of our conversation:
 - **Using `this->` Pointer:**
   Explained the necessity of using `this->` for clarity and proper member resolution in templates and derived classes.
 
-This conversation covered implementing and optimizing matrix operations, handling special member functions in C++, and effectively accessing and managing class members through inheritance and operator overloading.
-
-If you have any more questions or need further assistance, feel free to ask!
+7. **Using Static Cast to call base case operatorOverload**
+```Cpp
+   friend Matrix2D<T> operator+(const Matrix2D<T> & lhs,const Matrix2D<T> & rhs){
+        Matrix2D<T> result(lhs.rows,lhs.cols);
+         static_cast<Vector1D<T>&>(result) = static_cast<Vector1D<T>>(lhs) + static_cast<Vector1D<T>>(rhs);
+        return result;
+    }
+```

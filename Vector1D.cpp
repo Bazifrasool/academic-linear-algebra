@@ -33,6 +33,16 @@ class Vector1D{
         }
         cout<<endl;
     }
+    T dot(const Vector1D<T>& other){
+        assert(other.data.size() == this->data.size());
+        Vector1D<T> v=(*(this))*other;
+        T sum =0 ; 
+        for(auto i=0; i < v.data.size() ; i++){
+            sum+=v[i];
+        }
+        return sum;
+
+    }
     friend Vector1D<T> operator+(const Vector1D<T>& lhs ,const Vector1D<T>& rhs ){
         if(lhs.data.size() != rhs.data.size()){
             assert(lhs.data.size() != rhs.data.size());
@@ -83,6 +93,7 @@ class Vector1D{
         std::copy(other.data.begin(),other.data.end(),data.begin());
         return *(this);
     }
+
 };
 template<typename T>
 class Matrix2D : public Vector1D<T>{
@@ -95,9 +106,44 @@ class Matrix2D : public Vector1D<T>{
         cout<<"Matrix Constructed with values"<<endl;;
     }
     friend Matrix2D<T> operator+(const Matrix2D<T> & lhs,const Matrix2D<T> & rhs){
+        assert(lhs.rows == rhs.rows && lhs.cols == rhs.cols);
         Matrix2D<T> result(lhs.rows,lhs.cols);
          static_cast<Vector1D<T>&>(result) = static_cast<Vector1D<T>>(lhs) + static_cast<Vector1D<T>>(rhs);
         return result;
+    }
+    friend Matrix2D<T> operator-(const Matrix2D<T> & lhs,const Matrix2D<T> & rhs){
+        assert(lhs.rows == rhs.rows && lhs.cols == rhs.cols);
+        Matrix2D<T> result(lhs.rows,lhs.cols);
+         static_cast<Vector1D<T>&>(result) = static_cast<Vector1D<T>>(lhs) - static_cast<Vector1D<T>>(rhs);
+        return result;
+    }
+    friend Matrix2D<T> operator*(const Matrix2D<T> & lhs,const Matrix2D<T> & rhs){
+        assert(lhs.rows == rhs.rows && lhs.cols == rhs.cols);
+        Matrix2D<T> result(lhs.rows,lhs.cols);
+         static_cast<Vector1D<T>&>(result) = static_cast<Vector1D<T>>(lhs) * static_cast<Vector1D<T>>(rhs);
+        return result;
+    }
+    friend Matrix2D<T> operator*(Matrix2D<T> & lhs,Matrix2D<T> & rhs){
+        assert(lhs.cols = rhs.rows);
+        Matrix2D<T> result(lhs.rows,rhs.cols,0);
+        for(auto i = 0 ; i < lhs.rows ; i++){
+            for (auto j = 0 ; j < rhs.cols; j++){
+                T sum = 0;
+                  for (auto k = 0 ; k<rhs.rows;k++){
+                    sum+=lhs[i][k] * rhs[k][j];
+                  }
+                result[i][j]=sum;
+            }
+        }
+        return result;
+    }
+    void display(){
+        for(auto i = 0 ; i < this->rows; i++){
+            for(auto j = 0; j < this->cols;j++){
+                cout<<(*this)[i][j]<<" ";
+            }
+            cout<<endl;
+        }
     }
     class Proxy{
         private:
@@ -112,7 +158,7 @@ class Matrix2D : public Vector1D<T>{
             return refData[rowIndex+index];
         }
     };
-    Proxy operator[](const unsigned int index){
+    Proxy operator[](const unsigned int index) {
         // calculate the index in linear.
         auto sel_row=rows * index;
         return Proxy(this->data,sel_row);
@@ -126,19 +172,27 @@ class Matrix2D : public Vector1D<T>{
 };
 
 int main(){
-    Vector1D<float> test(10,2.2);
-    Vector1D<float> test2(test);
-    Vector1D<float> test3(test);
-    auto res = test + test2+ test3;
-    res.display();
-    // res = res+test;
+    Vector1D<float> test(3,2);
+    Vector1D<float> test2(3,3);
+    auto test3 = test.dot(test2);
+    cout<<test3<<endl;
+    // Vector1D<float> test3(test);
+    // auto res = test + test2+ test3;
     // res.display();
-    Matrix2D<float> f (3,3,12);
-    Matrix2D<float> e (3,3,10);
-    auto g = e+f;
-    g.display();
-    g[0][0] = 123;
-    g.display();
+    // // res = res+test;
+    // // res.display();
+    // Matrix2D<float> f (3,3,12);
+    // Matrix2D<float> e (3,3,10);
+    // auto g = e+f;
+    // g.display();
+    // g[0][0] = 123;
+    // g.display();
+    Matrix2D<float> A(3,3,4);
+    Matrix2D<float> B(3,3,1.2);
+
+    auto C = A*B;
+    C.display();
+
 
     return 0;
 }
